@@ -1,15 +1,30 @@
+import os
 import sqlite3
 from datetime import datetime
 
-DATABASE_NAME = 'expenses.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+if os.environ.get('VERCEL'):
+    DATABASE_NAME = os.path.join('/tmp', 'expenses.db')
+else:
+    DATABASE_NAME = os.path.join(BASE_DIR, 'expenses.db')
 
 def get_db_connection():
+    db_dir = os.path.dirname(DATABASE_NAME)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+    if not os.path.exists(DATABASE_NAME):
+        init_db()
     conn = sqlite3.connect(DATABASE_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    conn = get_db_connection()
+    db_dir = os.path.dirname(DATABASE_NAME)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+    conn = sqlite3.connect(DATABASE_NAME)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
     cursor.execute('''

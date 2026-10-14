@@ -49,13 +49,28 @@ python app.py
 
 Open your browser and navigate to `http://127.0.0.1:5000`.
 
+## Deploying to Vercel
+
+This repository is pre-configured for instant deployment on [Vercel](https://vercel.com):
+
+1. Push your latest code to your GitHub repository.
+2. Log in to [vercel.com](https://vercel.com) and click **"Add New..." > "Project"**.
+3. Import your GitHub repository (`TrackingDailyExpenseAnalysisMonthlyReport`).
+4. Keep the default settings and click **Deploy**.
+5. Once deployment completes, Vercel gives you a live production URL!
+
+> **Note on Serverless Storage**: Vercel functions run in an ephemeral serverless environment. On Vercel, the SQLite database is automatically maintained in `/tmp/expenses.db`. For permanent, cross-instance production persistence, connecting an external database service (like Neon Postgres, Supabase, or Turso) is recommended.
+
 ## Project Structure
 
 ```
 TrackingDailyExpense/
 │
+├── api/
+│   └── index.py        # Vercel serverless function entrypoint
 ├── app.py              # Main Flask application and routes
 ├── database.py         # SQLite database schema and queries
+├── vercel.json         # Vercel routing and configuration
 ├── requirements.txt    # Python dependencies
 ├── templates/          # HTML templates (Jinja2)
 │   ├── base.html
@@ -68,4 +83,5 @@ TrackingDailyExpense/
     ├── css/
     └── js/
 ```
+
 

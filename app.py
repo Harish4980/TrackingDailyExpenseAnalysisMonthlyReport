@@ -124,6 +124,67 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    user_id = session.get('user_id')
+    user = database.get_user_by_id(user_id)
+
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'update_profile':
+            username = request.form.get('username', '').strip()
+            email = request.form.get('email', '').strip()
+            phone = request.form.get('phone', '').strip()
+
+            if not username or not email or not phone:
+                flash('Please fill in all profile fields.', 'danger')
+            else:
+                success, error_msg = database.update_user_profile(user_id, username, email, phone)
+                if success:
+                    session['username'] = username
+                    flash('Profile updated successfully!', 'success')
+                else:
+                    flash(error_msg or 'Failed to update profile.', 'danger')
+
+        elif action == 'change_password':
+            current_password = request.form.get('current_password', '')
+            new_password = request.form.get('new_password', '')
+            confirm_password = request.form.get('confirm_password', '')
+
+            if not current_password or not new_password or not confirm_password:
+                flash('Please fill in all password fields.', 'danger')
+            elif new_password != confirm_password:
+                flash('New password and confirm password do not match.', 'danger')
+            elif len(new_password) < 4:
+                flash('New password must be at least 4 characters long.', 'danger')
+            else:
+                success, message = database.update_user_password(user_id, current_password, new_password)
+                if success:
+                    flash(message, 'success')
+                else:
+                    flash(message, 'danger')
+
+        return redirect(url_for('profile'))
+
+    stats = database.get_user_stats(user_id)
+    recent_expenses = database.get_recent_expenses(user_id, limit=5)
+
+    return render_template(
+        'profile.html',
+        user=user,
+        stats=stats,
+        recent_expenses=recent_expenses
+    )
+
+
 @app.route('/add', methods=['POST'])
 def add():
     if not session.get('logged_in'):

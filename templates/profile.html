@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h2 text-dark"><i class="fa-solid fa-id-card text-success me-2"></i>My Profile</h1>
+        <p class="text-muted">Manage your personal details, review your spending milestones, and secure your account.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: User Summary Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="bg-gradient-dark p-4 text-center text-white" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success text-white shadow fs-1 fw-bold mb-3" style="width: 88px; height: 88px; border: 4px solid rgba(255, 255, 255, 0.2);">
+                    {{ user['username'][:1].upper() if user['username'] else 'U' }}
+                </div>
+                <h4 class="mb-1 fw-bold">{{ user['username'] }}</h4>
+                <span class="badge bg-success bg-opacity-75 px-3 py-1 rounded-pill"><i class="fa-solid fa-shield-halved me-1"></i>Active Account</span>
+            </div>
+
+            <div class="card-body p-4">
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex align-items-center px-0 py-3">
+                        <i class="fa-solid fa-envelope text-primary me-3 fs-5"></i>
+                        <div>
+                            <small class="text-muted d-block">Email Address</small>
+                            <span class="fw-semibold text-dark">{{ user['email'] }}</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center px-0 py-3">
+                        <i class="fa-solid fa-phone text-success me-3 fs-5"></i>
+                        <div>
+                            <small class="text-muted d-block">Phone Number</small>
+                            <span class="fw-semibold text-dark">{{ user['phone'] }}</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center px-0 py-3">
+                        <i class="fa-solid fa-user-tag text-info me-3 fs-5"></i>
+                        <div>
+                            <small class="text-muted d-block">User ID</small>
+                            <span class="badge bg-secondary">#{{ user['id'] }}</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Summary Statistics -->
+                <h6 class="text-uppercase text-muted fw-bold small tracking-wider mb-3">Spending Statistics</h6>
+                <div class="row g-2 text-center">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <h5 class="fw-bold mb-0 text-dark">{{ stats['total_count'] }}</h5>
+                            <small class="text-muted">Total Expenses</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <h5 class="fw-bold mb-0 text-success">₹{{ "{:,.0f}".format(stats['total_spent']) }}</h5>
+                            <small class="text-muted">Total Spent</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger w-100 rounded-3">
+                        <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Edit Profile & Password -->
+    <div class="col-lg-8">
+        <!-- Edit Profile Details Card -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-bottom p-4">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <i class="fa-solid fa-user-pen text-primary me-2"></i>Personal Information
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('profile') }}" method="POST">
+                    <input type="hidden" name="action" value="update_profile">
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary" for="username">Full Name / Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="username" name="username" value="{{ user['username'] }}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="email">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="email" name="email" value="{{ user['email'] }}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="phone">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-phone text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="phone" name="phone" value="{{ user['phone'] }}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Save Profile Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-bottom p-4">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <i class="fa-solid fa-lock text-warning me-2"></i>Security & Password
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('profile') }}" method="POST">
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary" for="current_password">Current Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-key text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 border-end-0 ps-1" id="current_password" name="current_password" placeholder="Enter current password" required>
+                                <button class="btn btn-outline-secondary border-start-0 toggle-password-btn" type="button" data-target="current_password">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="new_password">New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 border-end-0 ps-1" id="new_password" name="new_password" placeholder="Enter new password (min. 4 chars)" required>
+                                <button class="btn btn-outline-secondary border-start-0 toggle-password-btn" type="button" data-target="new_password">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="confirm_password">Confirm New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock-open text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 border-end-0 ps-1" id="confirm_password" name="confirm_password" placeholder="Re-type new password" required>
+                                <button class="btn btn-outline-secondary border-start-0 toggle-password-btn" type="button" data-target="confirm_password">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn btn-warning px-4 py-2 rounded-3 fw-semibold text-dark">
+                                <i class="fa-solid fa-shield-check me-2"></i>Update Password
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Activity Card -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Recent Spending Activity
+                </h5>
+                <a href="{{ url_for('expenses') }}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_expenses %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th class="text-end pe-4">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exp in recent_expenses %}
+                            <tr>
+                                <td class="ps-4 fw-semibold">{{ exp['title'] }}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ exp['category'] }}</span>
+                                </td>
+                                <td class="text-muted small">{{ exp['date'] }}</td>
+                                <td class="text-end pe-4 fw-bold text-danger">₹{{ "{:,.2f}".format(exp['amount']) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    <i class="fa-solid fa-receipt fs-3 d-block mb-2 text-secondary"></i>
+                    No expenses recorded yet. Start tracking on the Dashboard!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Password visibility toggle helper
+    document.querySelectorAll('.toggle-password-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+</script>
+{% endblock %}
